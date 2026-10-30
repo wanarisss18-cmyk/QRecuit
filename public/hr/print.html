@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ชุดเอกสารผู้สมัคร</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; background: #e9edf2; color: #111; font: 15px/1.6 'IBM Plex Sans Thai', 'Sarabun', sans-serif; }
+    .bar { position: sticky; top: 0; background: #0b5cad; color: #fff; padding: 10px 16px; display: flex; gap: 12px; align-items: center; }
+    .bar button { font: inherit; font-weight: 600; padding: 8px 16px; border-radius: 8px; border: 0; cursor: pointer; }
+    .page { background: #fff; width: 210mm; min-height: 297mm; margin: 16px auto; padding: 18mm 18mm; box-sizing: border-box; position: relative; }
+    h1 { font-size: 20px; text-align: center; margin: 0 0 4px; }
+    h2 { font-size: 16px; border-bottom: 1px solid #999; padding-bottom: 2px; margin: 18px 0 8px; }
+    .sub { text-align: center; color: #444; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    td { padding: 3px 6px; vertical-align: top; }
+    td.k { color: #555; width: 34%; }
+    .photo { position: absolute; right: 18mm; top: 18mm; width: 30mm; height: 38mm; object-fit: cover; border: 1px solid #999; }
+    .consent-text { white-space: pre-line; text-align: justify; }
+    .sign { margin-top: 28px; margin-left: auto; width: 75mm; text-align: center; font-size: 14px; }
+    .sign img { height: 22mm; display: block; margin: 0 auto -4mm; }
+    .sign .line { border-top: 1px dotted #333; padding-top: 2px; }
+    .meta { font-size: 11px; color: #666; margin-top: 18px; border-top: 1px solid #ddd; padding-top: 4px; }
+    .copy { position: relative; margin: 10px 0 18px; text-align: center; }
+    .copy img.doc { max-width: 100%; max-height: 120mm; border: 1px solid #ccc; }
+    .stamp { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+    .stamp div { transform: rotate(-24deg); color: rgb(214 0 0 / 72%); font-weight: 700; font-size: 22px; text-align: center; line-height: 1.35; }
+    .stamp img { height: 16mm; display: block; margin: 0 auto; filter: hue-rotate(140deg) saturate(4); opacity: .8; }
+    .err { max-width: 600px; margin: 40px auto; padding: 16px; background: #fdecea; color: #b42318; border-radius: 8px; font-weight: 700; }
+    @media print {
+      body { background: #fff; }
+      .bar { display: none; }
+      .page { margin: 0; width: auto; min-height: auto; padding: 0; page-break-after: always; }
+      .photo { right: 0; top: 0; }
+      @page { size: A4; margin: 15mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bar"><strong style="flex:1">ชุดเอกสารผู้สมัคร (เฉพาะผู้ผ่านการตรวจประวัติ)</strong><button onclick="print()">พิมพ์ / บันทึกเป็น PDF</button></div>
+  <div id="root"></div>
+  <script type="module">
+    import { api, thaiDate, esc, DOC_LABEL, formatThaiId } from '/assets/common.js';
+    const token = sessionStorage.getItem('hrToken');
+    const id = new URLSearchParams(location.search).get('id');
+    const root = document.getElementById('root');
+    const file = (docId) => `/api/hr/documents/${docId}/file?token=${encodeURIComponent(token)}`;
+
+    try {
+      const d = await api(`/api/hr/candidates/${id}/dossier`, { token });
+      const c = d.candidate;
+      const a = c.application || {};
+      const name = `${c.title_th || ''}${c.first_name} ${c.last_name}`;
+      const doc = (t) => d.documents.find((x) => x.doc_type === t);
+      const sig = doc('SIGNATURE');
+      const signBlock = (signedAt, role = 'ผู้สมัคร') => `
+        <div class="sign">${sig ? `<img src="${file(sig.id)}" alt="ลายเซ็น">` : ''}
+          <div class="line">ลงชื่อ ${role}</div><div>( ${esc(name)} )</div>
+          <div style="font-size:12px;color:#555">ลงนามอิเล็กทรอนิกส์ ${thaiDate(signedAt, true)}</div></div>`;
+      const row = (k, v) => `<tr><td class="k">${k}</td><td>${esc(v || '-')}</td></tr>`;
+      const addr = [c.addr_house_no, c.addr_moo && `หมู่ ${c.addr_moo}`, c.addr_soi && `ซ.${c.addr_soi}`, c.addr_road && `ถ.${c.addr_road}`,
+        c.addr_subdistrict, c.addr_district, c.addr_province, c.addr_postal_code].filter(Boolean).join(' ');
+      const firstSigned = d.consents[0]?.signed_at;
+
+      let html = `
+        <section class="page">
+          ${doc('PHOTO') ? `<img class="photo" src="${file(doc('PHOTO').id)}" alt="">` : ''}
+          <h1>ใบสมัครงาน</h1>
+          <div class="sub">${esc(d.company)}<br>เลขที่ใบสมัคร ${esc(c.application_no)}</div>
+          <h2>ตำแหน่งที่สมัคร</h2>
+          <table>${row('ตำแหน่ง', c.position_applied)}${row('อัตราค่าจ้างที่ต้องการ', a.expected_salary)}${row('วันที่เริ่มงานได้', a.available_from)}${row('ทราบข่าวจาก', a.source)}${row('LINE ID', c.line_id)}</table>
+          <h2>ประวัติส่วนตัว</h2>
+          <table>
+            ${row('ชื่อ-สกุล', name)}${row('ชื่อ (อังกฤษ)', [c.first_name_en, c.last_name_en].filter(Boolean).join(' '))}${row('ชื่อเล่น', a.nickname)}
+            ${row('วันเกิด', thaiDate(c.birth_date))}${row('เลขประจำตัวประชาชน', formatThaiId(c.national_id))}
+            ${row('สัญชาติ / เชื้อชาติ / ศาสนา', [a.nationality, a.ethnicity, a.religion].join(' / '))}
+            ${row('น้ำหนัก / ส่วนสูง', `${a.weight_kg || '-'} กก. / ${a.height_cm || '-'} ซม.`)}
+            ${row('มือถือ', c.phone)}${row('ที่อยู่ตามทะเบียนบ้าน', addr)}
+            ${row('ที่อยู่ปัจจุบัน', a.current_same_as_registered ? 'เหมือนทะเบียนบ้าน' : a.current_address)}${row('พักอยู่กับ', a.living_with)}
+            ${row('สถานภาพ', a.marital_status)}${row('สถานภาพทางทหาร', a.military_status)}
+            ${row('บิดา', c.father_name)}${row('มารดา', c.mother_name)}${row('สถานภาพบิดา-มารดา', a.parents_status)}
+          </table>
+          <h2>การศึกษา</h2>
+          <table>${row('วุฒิสูงสุด', [a.education?.level, a.education?.major].filter(Boolean).join(' สาขา '))}${row('สถานศึกษา', a.education?.institution)}${row('ปีที่จบ / เกรด', [a.education?.year, a.education?.gpa].filter(Boolean).join(' / '))}</table>
+          <h2>ประวัติการทำงาน</h2>
+          <table>${d.work.length ? d.work.map((w) => row(esc(w.company), [w.position, w.duties, w.salary && `${w.salary} บาท`, [w.start_date, w.end_date].filter(Boolean).join(' – '), w.reason_leaving && `ออกเพราะ ${w.reason_leaving}`].filter(Boolean).join(' · '))).join('') : row('-', 'ไม่มี')}</table>
+          <h2>ความสามารถ</h2>
+          <table>
+            ${row('Word / Excel / PowerPoint', [a.skills?.word, a.skills?.excel, a.skills?.powerpoint].map((x) => x || '-').join(' / '))}
+            ${row('พิมพ์ดีด ไทย / อังกฤษ', `${a.skills?.typing_th || '-'} / ${a.skills?.typing_en || '-'} คำ/นาที`)}
+            ${row('ภาษาอังกฤษ', a.skills?.english)}${row('โปรแกรมอื่นๆ', a.skills?.other_programs)}
+            ${row('การขับขี่', [a.driving?.manual && 'เกียร์ธรรมดา', a.driving?.automatic && 'เกียร์อัตโนมัติ'].filter(Boolean).join(', '))}
+            ${row('ใบขับขี่', [(a.driving?.license_types || []).join(', '), a.driving_license?.license_no].filter(Boolean).join(' · '))}
+            ${row('สามารถขับ', (a.driving?.vehicles || []).join(', '))}
+          </table>
+          <h2>อื่นๆ</h2>
+          <table>${row('กรณีเร่งด่วนติดต่อ', [a.emergency?.name, a.emergency?.relation, a.emergency?.phone].filter(Boolean).join(' · '))}${row('บุคคลในบริษัทที่รู้จัก', a.known_employee)}${row('บุคคลอ้างอิง', a.reference)}${row('ย้ายสถานที่ปฏิบัติงานภายในภาค', a.relocation_region)}</table>
+          ${signBlock(firstSigned, 'ผู้สมัครงาน')}
+        </section>`;
+
+      for (const k of d.consents) {
+        html += `
+          <section class="page">
+            <h1>${esc(k.title || k.consent_type)}</h1>
+            <div class="sub">${esc(d.company)}</div>
+            <p class="consent-text">${k.text ? esc(k.text) : '<em>ข้อความเวอร์ชันที่ลงนามไม่ตรงกับเทมเพลตปัจจุบัน — ดูหลักฐานจาก content_sha256</em>'}</p>
+            ${signBlock(k.signed_at, k.consent_type === 'BACKGROUND_CHECK' ? 'ผู้ให้ความยินยอม' : k.consent_type === 'EMPLOYMENT_CONTRACT' ? 'ผู้รับจ้าง' : 'ผู้สมัคร')}
+            <div class="meta">เอกสารอิเล็กทรอนิกส์ · ${esc(k.consent_type)} · SHA-256 ${esc(k.content_sha256)}</div>
+          </section>`;
+      }
+
+      // Digital replacement for writing "ใช้เพื่อสมัครงาน… / สำเนาถูกต้อง" across each copy by hand
+      const copies = d.documents.filter((x) => ['ID_CARD', 'HOUSE_REG', 'DRIVER_LICENSE', 'EDUCATION'].includes(x.doc_type) && x.mime_type.startsWith('image/'));
+      if (copies.length) {
+        html += `<section class="page"><h1>สำเนาเอกสาร</h1>${copies.map((x) => `
+          <div class="copy"><div style="font-weight:600;text-align:left">${DOC_LABEL[x.doc_type]}</div>
+            <img class="doc" src="${file(x.id)}" alt="">
+            <div class="stamp"><div>ใช้เพื่อสมัครงาน ${esc(d.company)} เท่านั้น<br>สำเนาถูกต้อง${sig ? `<img src="${file(sig.id)}" alt="">` : ''}${esc(name)}</div></div>
+          </div>`).join('')}</section>`;
+      }
+      root.innerHTML = html;
+    } catch (err) {
+      root.innerHTML = `<div class="err">${err.status === 423 ? 'ถูกล็อก: ' : ''}${esc(err.message)}</div>`;
+      document.querySelector('.bar button').disabled = true;
+    }
+  </script>
+</body>
+</html>

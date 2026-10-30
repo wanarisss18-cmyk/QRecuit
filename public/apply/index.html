@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#13315c">
+  <title>สมัครงานออนไลน์</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/apply/apply.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">SR</span><span class="brand-text"><span>สมัครงานออนไลน์</span><small data-company>บริษัท สยามราชธานี จำกัด (มหาชน)</small></span></div>
+  </header>
+
+  <!-- ============ WELCOME ============ -->
+  <main id="welcome" class="container welcome">
+    <section class="hero">
+      <span class="hero-badge"><i data-icon="sparkle"></i> สมัครด้วย AI อ่านเอกสารอัตโนมัติ</span>
+      <h1>สมัครงานได้ในไม่กี่นาที<br>ไม่ต้องพิมพ์ ไม่ต้องปริ้นท์</h1>
+      <p class="muted">ถ่ายรูปบัตรประชาชนและทะเบียนบ้าน ระบบจะกรอกใบสมัครให้ คุณเพียงตรวจสอบและเซ็นยืนยันบนมือถือ</p>
+    </section>
+
+    <ol class="how">
+      <li><span class="how-icon"><i data-icon="scan"></i></span><div><strong>สแกนเอกสาร</strong><span>ถ่ายรูปบัตรและทะเบียนบ้าน AI อ่านข้อมูลให้ทันที</span></div></li>
+      <li><span class="how-icon"><i data-icon="checkCircle"></i></span><div><strong>ตรวจสอบข้อมูล</strong><span>ยืนยันข้อมูลที่ AI กรอก เพิ่มเฉพาะส่วนที่เอกสารไม่มี</span></div></li>
+      <li><span class="how-icon"><i data-icon="pen"></i></span><div><strong>เซ็นยินยอมออนไลน์</strong><span>ลงลายมือชื่อครั้งเดียว แทนการเซ็นกระดาษทุกฉบับ</span></div></li>
+    </ol>
+
+    <div class="card prepare">
+      <h3>เตรียมเอกสารให้พร้อม</h3>
+      <ul class="prep-list">
+        <li><i data-icon="idcard"></i> บัตรประจำตัวประชาชน <span class="badge b-req">จำเป็น</span></li>
+        <li><i data-icon="home"></i> ทะเบียนบ้าน (หน้าที่มีชื่อคุณ) <span class="badge b-req">จำเป็น</span></li>
+        <li><i data-icon="car"></i> ใบอนุญาตขับรถ <span class="badge b-opt">ถ้ามี</span></li>
+        <li><i data-icon="cap"></i> วุฒิการศึกษา <span class="badge b-opt">ถ้ามี</span></li>
+      </ul>
+      <p class="muted small" style="margin:12px 0 0"><i data-icon="clock"></i> ใช้เวลาประมาณ 5–7 นาที</p>
+    </div>
+
+    <button class="btn btn-primary btn-lg btn-block" id="start">เริ่มสมัครงาน <i data-icon="next"></i></button>
+    <p class="privacy"><i data-icon="shield"></i> ข้อมูลของคุณถูกเข้ารหัสระหว่างส่ง และใช้เพื่อการสมัครงานเท่านั้น ตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล</p>
+  </main>
+
+  <!-- ============ WIZARD ============ -->
+  <div id="wizard" class="hidden">
+    <nav class="stepper" aria-label="ขั้นตอน">
+      <ol id="stepbar">
+        <li><span class="dot">1</span><span class="lbl">สแกนเอกสาร</span></li>
+        <li><span class="dot">2</span><span class="lbl">ข้อมูลส่วนตัว</span></li>
+        <li><span class="dot">3</span><span class="lbl">งานที่สมัคร</span></li>
+        <li><span class="dot">4</span><span class="lbl">ข้อมูลเพิ่มเติม</span></li>
+        <li><span class="dot">5</span><span class="lbl">ยินยอมและเซ็น</span></li>
+      </ol>
+    </nav>
+
+    <main class="container">
+      <form id="form" novalidate>
+        <!-- STEP 1: SCAN -->
+        <section class="step" data-step="1">
+          <header class="step-head">
+            <h1>สแกนเอกสาร</h1>
+            <p class="muted">แตะที่เอกสารเพื่อเปิดกล้อง AI จะอ่านข้อมูลและกรอกใบสมัครให้อัตโนมัติ</p>
+          </header>
+          <div class="scan-progress">
+            <div class="bar"><span id="scanBar"></span></div>
+            <span id="scanCount" class="small muted">สแกนแล้ว 0 จาก 2 เอกสารที่จำเป็น</span>
+          </div>
+          <div class="doc-list" id="docList"></div>
+          <div class="alert alert-info small"><i data-icon="info"></i><span>ไม่ต้องเขียน "สำเนาถูกต้อง" ทับรูป — ระบบจะให้คุณเซ็นรับรองสำเนาแบบอิเล็กทรอนิกส์ในขั้นตอนสุดท้าย</span></div>
+        </section>
+
+        <!-- STEP 2: REVIEW PERSONAL -->
+        <section class="step hidden" data-step="2">
+          <header class="step-head">
+            <h1>ตรวจสอบข้อมูลส่วนตัว</h1>
+            <p class="muted" id="reviewIntro">ตรวจสอบข้อมูลที่ AI อ่านจากเอกสาร แล้วกรอกเพิ่มเฉพาะช่องที่ว่าง</p>
+          </header>
+          <div id="aiSummary"></div>
+          <div id="crossCheck"></div>
+
+          <div class="card" data-section>
+            <div class="card-head"><span class="card-icon"><i data-icon="idcard"></i></span><h2>ข้อมูลตามบัตรประชาชน</h2><button type="button" class="btn-link" data-unlock><i data-icon="edit"></i>แก้ไข</button></div>
+            <div class="field"><label>เลขประจำตัวประชาชน <span class="req">*</span></label><input name="p.national_id" inputmode="numeric" maxlength="17" required><div class="hint" id="nidHint"></div></div>
+            <div class="grid-3">
+              <div class="field"><label>คำนำหน้า <span class="req">*</span></label><select name="p.title_th" required><option></option><option>นาย</option><option>นาง</option><option>นางสาว</option></select></div>
+              <div class="field"><label>ชื่อ <span class="req">*</span></label><input name="p.first_name" required></div>
+              <div class="field"><label>นามสกุล <span class="req">*</span></label><input name="p.last_name" required></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>ชื่อ (อังกฤษ)</label><input name="p.first_name_en" autocapitalize="words"></div>
+              <div class="field"><label>นามสกุล (อังกฤษ)</label><input name="p.last_name_en" autocapitalize="words"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>วันเกิด <span class="req">*</span></label><input type="date" name="p.birth_date" required></div>
+              <div class="field"><label>บัตรหมดอายุ</label><input type="date" name="a.id_card_expiry"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>ศาสนา</label><input name="a.religion"></div>
+              <div class="field"><label>สัญชาติ</label><input name="a.nationality" value="ไทย"></div>
+            </div>
+          </div>
+
+          <div class="card" data-section>
+            <div class="card-head"><span class="card-icon"><i data-icon="home"></i></span><h2>ที่อยู่ตามทะเบียนบ้าน</h2><button type="button" class="btn-link" data-unlock><i data-icon="edit"></i>แก้ไข</button></div>
+            <div class="grid-3">
+              <div class="field"><label>บ้านเลขที่ <span class="req">*</span></label><input name="p.addr_house_no" required></div>
+              <div class="field"><label>หมู่</label><input name="p.addr_moo"></div>
+              <div class="field"><label>ซอย</label><input name="p.addr_soi"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>ถนน</label><input name="p.addr_road"></div>
+              <div class="field"><label>ตำบล/แขวง</label><input name="p.addr_subdistrict"></div>
+              <div class="field"><label>อำเภอ/เขต</label><input name="p.addr_district"></div>
+              <div class="field"><label>จังหวัด <span class="req">*</span></label><input name="p.addr_province" required></div>
+            </div>
+            <div class="field" style="max-width:200px"><label>รหัสไปรษณีย์</label><input name="p.addr_postal_code" inputmode="numeric" maxlength="5"></div>
+          </div>
+
+          <div class="card" data-section>
+            <div class="card-head"><span class="card-icon"><i data-icon="users"></i></span><h2>บิดา-มารดา</h2><button type="button" class="btn-link" data-unlock><i data-icon="edit"></i>แก้ไข</button></div>
+            <p class="muted small" style="margin:0">ใช้ในหนังสือยินยอมให้ตรวจประวัติบุคคล</p>
+            <div class="field"><label>ชื่อ-สกุล บิดา <span class="req">*</span></label><input name="p.father_name" required></div>
+            <div class="field"><label>ชื่อ-สกุล มารดา <span class="req">*</span></label><input name="p.mother_name" required></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="phone"></i></span><h2>ช่องทางติดต่อ</h2></div>
+            <div class="grid-2">
+              <div class="field"><label>เบอร์มือถือ <span class="req">*</span></label><input name="p.phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="08x-xxx-xxxx"></div>
+              <div class="field"><label>LINE ID</label><input name="p.line_id"></div>
+            </div>
+            <div class="field"><label>อีเมล</label><input name="p.email" type="email" autocomplete="email"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="user"></i></span><h2>ข้อมูลเพิ่มเติม</h2></div>
+            <div class="grid-3">
+              <div class="field"><label>ชื่อเล่น</label><input name="a.nickname"></div>
+              <div class="field"><label>น้ำหนัก (กก.)</label><input name="a.weight_kg" inputmode="numeric"></div>
+              <div class="field"><label>ส่วนสูง (ซม.)</label><input name="a.height_cm" inputmode="numeric"></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>สถานภาพสมรส</label><select name="a.marital_status"><option></option><option>โสด</option><option>สมรส</option><option>หย่า</option><option>หม้าย</option></select></div>
+              <div class="field"><label>สถานภาพบิดา-มารดา</label><select name="a.parents_status"><option></option><option>อยู่ร่วมกัน</option><option>แยกกันอยู่</option><option>หย่าร้าง</option><option>บิดา/มารดาถึงแก่กรรม</option></select></div>
+              <div class="field"><label>ปัจจุบันพักอยู่กับ</label><select name="a.living_with"><option></option><option>บิดา-มารดา</option><option>บ้านตนเอง</option><option>เช่าอยู่</option><option>อื่นๆ</option></select></div>
+              <div class="field"><label>เชื้อชาติ</label><input name="a.ethnicity" value="ไทย"></div>
+            </div>
+            <label class="check" style="margin-top:14px"><input type="checkbox" name="a.current_same_as_registered" checked> ที่อยู่ปัจจุบันเหมือนทะเบียนบ้าน</label>
+            <div class="field hidden" id="currentAddr"><label>ที่อยู่ปัจจุบัน</label><textarea name="a.current_address"></textarea></div>
+          </div>
+        </section>
+
+        <!-- STEP 3: JOB -->
+        <section class="step hidden" data-step="3">
+          <header class="step-head"><h1>งานที่สมัคร</h1><p class="muted">เลือกตำแหน่งและบอกเราเกี่ยวกับประสบการณ์ของคุณ</p></header>
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="briefcase"></i></span><h2>ตำแหน่งที่ต้องการ <span class="req">*</span></h2></div>
+            <div class="position-grid" id="positionChips"></div>
+            <div class="field"><label>หรือระบุตำแหน่ง</label><input name="p.position_applied" required placeholder="พิมพ์ชื่อตำแหน่ง"></div>
+            <div class="grid-2">
+              <div class="field"><label>อัตราค่าจ้างที่ต้องการ (บาท)</label><input name="a.expected_salary" inputmode="numeric"></div>
+              <div class="field"><label>วันที่เริ่มงานได้</label><input name="a.available_from" placeholder="เช่น ทันที"></div>
+              <div class="field"><label>ทราบข่าวการรับสมัครจาก</label><select name="a.source"><option></option><option>Facebook</option><option>LINE</option><option>JobThai / JobsDB</option><option>เพื่อน/คนรู้จักแนะนำ</option><option>อื่นๆ</option></select></div>
+              <div class="field"><label>สถานภาพทางทหาร</label><select name="a.military_status"><option></option><option>เกณฑ์แล้ว</option><option>ยังไม่เกณฑ์</option><option>ได้รับการยกเว้น</option><option>ไม่เกี่ยวข้อง</option></select></div>
+            </div>
+            <div class="field"><label>สามารถย้ายสถานที่ปฏิบัติงานภายในภาค</label><input name="a.relocation_region" placeholder="เช่น ภาคกลาง"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="cap"></i></span><h2>การศึกษาสูงสุด</h2></div>
+            <div class="grid-2">
+              <div class="field"><label>วุฒิ</label><select name="a.education.level"><option></option><option>ประถมศึกษา</option><option>ม.3</option><option>ม.6 / ปวช.</option><option>ปวส.</option><option>ปริญญาตรี</option><option>สูงกว่าปริญญาตรี</option></select></div>
+              <div class="field"><label>สาขา</label><input name="a.education.major"></div>
+            </div>
+            <div class="field"><label>สถานศึกษา</label><input name="a.education.institution"></div>
+            <div class="grid-2">
+              <div class="field"><label>ปีที่จบ (พ.ศ.)</label><input name="a.education.year" inputmode="numeric"></div>
+              <div class="field"><label>เกรดเฉลี่ย</label><input name="a.education.gpa" inputmode="decimal"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="briefcase"></i></span><h2>ประวัติการทำงาน</h2></div>
+            <div id="workList"></div>
+            <button type="button" class="btn btn-sm" id="addWork">+ เพิ่มที่ทำงาน</button>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="car"></i></span><h2>การขับขี่</h2></div>
+            <div class="label">ความสามารถ</div>
+            <div class="checks">
+              <label class="chip"><input type="checkbox" name="a.driving.manual"><span>เกียร์ธรรมดา</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.automatic"><span>เกียร์อัตโนมัติ</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.own_car"><span>มีรถยนต์</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.own_motorcycle"><span>มีรถจักรยานยนต์</span></label>
+            </div>
+            <div class="label" style="margin-top:16px">ประเภทใบขับขี่</div>
+            <div class="checks">
+              <label class="chip"><input type="checkbox" name="a.driving.license_types" value="ชนิดที่ 1"><span>ชนิดที่ 1 (ส่วนบุคคล)</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.license_types" value="ชนิดที่ 2"><span>ชนิดที่ 2</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.license_types" value="ชนิดที่ 3"><span>ชนิดที่ 3</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.license_types" value="ชนิดที่ 4"><span>ชนิดที่ 4</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.license_types" value="จักรยานยนต์"><span>รถจักรยานยนต์</span></label>
+            </div>
+            <div class="label" style="margin-top:16px">สามารถขับ</div>
+            <div class="checks">
+              <label class="chip"><input type="checkbox" name="a.driving.vehicles" value="รถเก๋ง"><span>รถเก๋ง</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.vehicles" value="รถกระบะ"><span>รถกระบะ</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.vehicles" value="รถตู้"><span>รถตู้</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.vehicles" value="รถบัส"><span>รถบัส</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.vehicles" value="รถหกล้อ"><span>รถหกล้อ</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.vehicles" value="รถสิบล้อ"><span>รถสิบล้อ</span></label>
+              <label class="chip"><input type="checkbox" name="a.driving.vehicles" value="รถโฟล์คลิฟท์"><span>รถโฟล์คลิฟท์</span></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="file"></i></span><h2>ความสามารถอื่นๆ</h2></div>
+            <div class="grid-3">
+              <div class="field"><label>Word</label><select name="a.skills.word"><option></option><option>ดี</option><option>พอใช้</option><option>ไม่ได้</option></select></div>
+              <div class="field"><label>Excel</label><select name="a.skills.excel"><option></option><option>ดี</option><option>พอใช้</option><option>ไม่ได้</option></select></div>
+              <div class="field"><label>PowerPoint</label><select name="a.skills.powerpoint"><option></option><option>ดี</option><option>พอใช้</option><option>ไม่ได้</option></select></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>พิมพ์ไทย (คำ/นาที)</label><input name="a.skills.typing_th" inputmode="numeric"></div>
+              <div class="field"><label>พิมพ์อังกฤษ (คำ/นาที)</label><input name="a.skills.typing_en" inputmode="numeric"></div>
+            </div>
+            <div class="field"><label>ภาษาอังกฤษ (พูด / อ่าน / เขียน)</label><input name="a.skills.english" placeholder="เช่น พอใช้ / ดี / ดี"></div>
+            <div class="field"><label>โปรแกรมอื่นๆ</label><input name="a.skills.other_programs"></div>
+          </div>
+        </section>
+
+        <!-- STEP 4: OTHER -->
+        <section class="step hidden" data-step="4">
+          <header class="step-head"><h1>ข้อมูลเพิ่มเติม</h1><p class="muted">ผู้ติดต่อกรณีฉุกเฉินและคำรับรองตนเอง</p></header>
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="phone"></i></span><h2>กรณีเร่งด่วนติดต่อ</h2></div>
+            <div class="field"><label>ชื่อ-สกุล <span class="req">*</span></label><input name="a.emergency.name" required></div>
+            <div class="grid-2">
+              <div class="field"><label>เกี่ยวข้องเป็น</label><input name="a.emergency.relation" placeholder="เช่น บิดา"></div>
+              <div class="field"><label>เบอร์โทร <span class="req">*</span></label><input name="a.emergency.phone" type="tel" inputmode="tel" required></div>
+            </div>
+            <div class="field"><label>บุคคลในบริษัทที่รู้จัก (ถ้ามี)</label><input name="a.known_employee"></div>
+            <div class="field"><label>บุคคลอ้างอิง (ชื่อ / ที่ทำงาน / เบอร์)</label><input name="a.reference"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="heart"></i></span><h2>คำรับรองตนเอง</h2></div>
+            <div class="alert alert-info small"><i data-icon="lock"></i><span>ข้อมูลส่วนนี้เป็นข้อมูลอ่อนไหว เห็นได้เฉพาะผู้จัดการฝ่ายบุคคล</span></div>
+            <div class="grid-2">
+              <div class="field"><label>สุรา</label><select name="a.declarations.alcohol"><option>ไม่ดื่ม</option><option>ดื่มบางครั้ง</option><option>ดื่มประจำ</option></select></div>
+              <div class="field"><label>บุหรี่</label><select name="a.declarations.smoking"><option>ไม่สูบ</option><option>สูบ</option></select></div>
+              <div class="field"><label>เคยใช้สารเสพติด</label><select name="a.declarations.drugs"><option>ไม่เคย</option><option>เคย</option></select></div>
+              <div class="field"><label>เคยต้องโทษคดี</label><select name="a.declarations.criminal_record"><option>ไม่เคย</option><option>เคย</option></select></div>
+            </div>
+            <div class="field"><label>โรคประจำตัว</label><input name="a.declarations.chronic_disease" placeholder="ไม่มี"></div>
+            <div class="field"><label>เคยป่วยโรคติดต่อ / เรื้อรัง</label><input name="a.declarations.contagious_disease" placeholder="ไม่เคย"></div>
+          </div>
+        </section>
+
+        <!-- STEP 5: CONSENT + SIGN -->
+        <section class="step hidden" data-step="5">
+          <header class="step-head"><h1>ยินยอมและลงลายมือชื่อ</h1><p class="muted">อ่านเอกสารแต่ละฉบับ แล้วเซ็นชื่อครั้งเดียวเพื่อใช้แทนการเซ็นกระดาษทุกฉบับ</p></header>
+          <div class="card" style="padding:8px 0">
+            <div id="consentList" class="consent-list"><div style="padding:16px"><span class="spinner"></span> กำลังเตรียมเอกสาร…</div></div>
+          </div>
+          <label class="check accept-all"><input type="checkbox" id="acceptAll"> <span>ข้าพเจ้าได้อ่านและยินยอมตามเอกสารทุกฉบับข้างต้น</span></label>
+          <div class="card">
+            <div class="card-head"><span class="card-icon"><i data-icon="pen"></i></span><h2>ลงลายมือชื่อ</h2><button type="button" class="btn-link" id="sigClear"><i data-icon="refresh"></i>เซ็นใหม่</button></div>
+            <div class="sig-pad"><canvas id="sig"></canvas><div class="sig-line"><span>✕</span></div><div class="sig-ph" id="sigPh">ใช้นิ้วเซ็นชื่อในกรอบนี้</div></div>
+            <p class="sig-name" id="sigName"></p>
+          </div>
+        </section>
+
+        <div id="formError" class="alert alert-danger hidden" role="alert"></div>
+      </form>
+    </main>
+
+    <div class="actionbar">
+      <div class="actionbar-inner">
+        <button type="button" class="btn" id="back"><i data-icon="back"></i> ย้อนกลับ</button>
+        <button type="button" class="btn btn-primary" id="next">ถัดไป <i data-icon="next"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DONE ============ -->
+  <main id="done" class="container hidden">
+    <div class="done-hero">
+      <div class="done-check"><i data-icon="check"></i></div>
+      <h1>ส่งใบสมัครเรียบร้อยแล้ว</h1>
+      <p class="muted">ขอบคุณที่สนใจร่วมงานกับเรา</p>
+    </div>
+    <div class="card app-no">
+      <div class="muted small">เลขที่ใบสมัคร</div>
+      <div class="app-no-value"><strong id="appNo"></strong><button type="button" class="btn-link" id="copyNo"><i data-icon="copy"></i>คัดลอก</button></div>
+    </div>
+    <div class="card">
+      <h3>ขั้นตอนต่อไป</h3>
+      <ul class="timeline">
+        <li class="done"><strong>รับใบสมัครแล้ว</strong><span class="small">ระบบได้รับข้อมูลและเอกสารของคุณเรียบร้อย</span></li>
+        <li class="current"><strong>ตรวจสอบประวัติ</strong><span class="small">ทราบผลประมาณ 16:00 น. ของวันทำการ</span></li>
+        <li><strong>เจ้าหน้าที่ติดต่อกลับ</strong><span class="small">ทางเบอร์มือถือที่ให้ไว้</span></li>
+      </ul>
+    </div>
+    <a class="btn btn-primary btn-lg btn-block" id="statusLink"><i data-icon="search"></i> ติดตามสถานะใบสมัคร</a>
+    <button type="button" class="btn btn-block" id="shareLink" style="margin-top:10px"><i data-icon="share"></i> บันทึกลิงก์ติดตามสถานะ</button>
+  </main>
+
+  <!-- ============ SCANNER (full-screen) ============ -->
+  <div id="scanner" class="scanner hidden" role="dialog" aria-modal="true" aria-labelledby="scanTitle">
+    <div class="scanner-top">
+      <button type="button" class="icon-btn" id="scanClose" aria-label="ปิด"><i data-icon="close"></i></button>
+      <div class="scanner-title" id="scanTitle">สแกนเอกสาร</div>
+      <span style="width:44px"></span>
+    </div>
+
+    <div class="scanner-stage" id="scanStage">
+      <video id="scanVideo" playsinline muted autoplay></video>
+      <img id="scanPreview" alt="">
+      <div class="frame" id="scanFrame"><i></i><i></i><i></i><i></i><div class="scanline"></div></div>
+      <div class="stage-hint" id="scanHint"></div>
+    </div>
+
+    <!-- camera controls -->
+    <div class="scanner-panel" data-state="camera">
+      <p class="panel-tip" id="scanTip"></p>
+      <div class="shutter-row">
+        <label class="icon-btn light" aria-label="เลือกรูปจากเครื่อง"><i data-icon="image"></i><input type="file" id="scanGallery" accept="image/*,application/pdf" hidden></label>
+        <button type="button" class="shutter" id="shutter" aria-label="ถ่ายรูป"><span></span></button>
+        <span style="width:48px"></span>
+      </div>
+    </div>
+
+    <!-- processing -->
+    <div class="scanner-panel" data-state="processing">
+      <div class="proc-title"><span class="spinner"></span> AI กำลังอ่านเอกสาร</div>
+      <ul class="proc-steps" id="procSteps">
+        <li>ตรวจคุณภาพรูปภาพ</li>
+        <li>ค้นหาข้อความบนเอกสาร</li>
+        <li>แยกข้อมูลและตรวจความถูกต้อง</li>
+      </ul>
+    </div>
+
+    <!-- result -->
+    <div class="scanner-panel sheet" data-state="result">
+      <div class="result-head"><span class="ok-dot"><i data-icon="check"></i></span><div><strong>อ่านข้อมูลสำเร็จ</strong><div class="small muted" id="resultSub"></div></div></div>
+      <div id="resultWarn"></div>
+      <dl class="result-list" id="resultList"></dl>
+      <div class="actions">
+        <button type="button" class="btn" id="retake"><i data-icon="camera"></i> ถ่ายใหม่</button>
+        <button type="button" class="btn btn-primary" id="useResult"><i data-icon="check"></i> ข้อมูลถูกต้อง</button>
+      </div>
+    </div>
+
+    <!-- attached without OCR (photo / education / OCR failure) -->
+    <div class="scanner-panel sheet" data-state="attached">
+      <div class="result-head"><span class="ok-dot" id="attachedDot"><i data-icon="check"></i></span><div><strong id="attachedTitle">แนบเอกสารแล้ว</strong><div class="small muted" id="attachedSub"></div></div></div>
+      <div class="actions">
+        <button type="button" class="btn" id="retake2"><i data-icon="camera"></i> ถ่ายใหม่</button>
+        <button type="button" class="btn btn-primary" id="useAttached"><i data-icon="check"></i> ใช้รูปนี้</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- consent reader -->
+  <dialog id="consentSheet" class="bottom-sheet">
+    <div class="sheet-head"><strong id="consentTitle"></strong><button type="button" class="icon-btn" data-close aria-label="ปิด"><i data-icon="close"></i></button></div>
+    <div class="sheet-body" id="consentText"></div>
+    <div class="sheet-foot"><button type="button" class="btn btn-primary btn-block" id="consentAgree"><i data-icon="check"></i> ข้าพเจ้าได้อ่านและยินยอม</button></div>
+  </dialog>
+
+  <template id="workTpl">
+    <div class="work-item">
+      <div class="work-head"><strong>ที่ทำงาน</strong><button type="button" class="btn-link" data-remove>ลบ</button></div>
+      <div class="grid-2">
+        <div class="field"><label>ชื่อบริษัท</label><input data-w="company"></div>
+        <div class="field"><label>ตำแหน่ง</label><input data-w="position"></div>
+        <div class="field"><label>ดำเนินธุรกิจเกี่ยวกับ</label><input data-w="business_type"></div>
+        <div class="field"><label>เงินเดือน (บาท)</label><input data-w="salary" inputmode="numeric"></div>
+        <div class="field"><label>ตั้งแต่</label><input data-w="start_date" type="month"></div>
+        <div class="field"><label>ถึง</label><input data-w="end_date" type="month"></div>
+      </div>
+      <div class="field"><label>หน้าที่</label><input data-w="duties"></div>
+      <div class="field"><label>สาเหตุที่ออก</label><input data-w="reason_leaving"></div>
+    </div>
+  </template>
+
+  <script type="module" src="/apply/apply.js"></script>
+</body>
+</html>

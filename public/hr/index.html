@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HR Screening Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/hr/hr.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">SR</span><span class="brand-text"><span>HR Screening</span><small>Q-Recruit · บริษัท สยามราชธานี จำกัด (มหาชน)</small></span></div>
+    <span class="spacer"></span>
+    <span id="who" class="small"></span>
+    <button class="btn btn-sm hidden" id="logout">ออกจากระบบ</button>
+  </header>
+
+  <!-- login -->
+  <main class="container hidden" id="loginView" style="max-width:420px">
+    <form class="card" id="loginForm">
+      <h1>เข้าสู่ระบบ HR</h1>
+      <label>ชื่อผู้ใช้</label><input name="username" autocomplete="username" required>
+      <label>รหัสผ่าน</label><input name="password" type="password" autocomplete="current-password" required>
+      <div id="loginError" class="hint err"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:16px">เข้าสู่ระบบ</button>
+    </form>
+  </main>
+
+  <!-- board -->
+  <main class="container wide hidden" id="boardView">
+    <nav class="tabs">
+      <button class="tab active" data-tab="board">ผู้สมัคร</button>
+      <button class="tab" data-tab="batches">รอบส่งตรวจประวัติ</button>
+      <button class="tab manager-only hidden" data-tab="audit">Audit Log</button>
+    </nav>
+
+    <section data-panel="board">
+      <div class="kpis" id="kpis"></div>
+      <div class="toolbar">
+        <input id="search" placeholder="ค้นหา ชื่อ / เลขที่ใบสมัคร / เบอร์โทร" type="search">
+        <button class="btn btn-primary" id="exportBtn">Batch Export ส่งตรวจประวัติ</button>
+      </div>
+      <p class="muted small" id="cutoff"></p>
+      <div class="table-wrap card" style="padding:0">
+        <table class="table">
+          <thead><tr>
+            <th><input type="checkbox" id="selectAll" title="เลือกทั้งหมดที่รอส่งตรวจ"></th>
+            <th>เลขที่ใบสมัคร</th><th>ชื่อ-สกุล</th><th>เลขบัตร</th><th>ตำแหน่ง</th><th>สถานะ</th><th>ระบบหลัก</th><th>สมัครเมื่อ</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section data-panel="batches" class="hidden">
+      <div class="card" style="padding:0">
+        <table class="table">
+          <thead><tr><th>รอบ</th><th>ส่งเมื่อ</th><th>โดย</th><th>จำนวน</th><th>รอผล</th><th>ผ่าน</th><th>ไม่ผ่าน</th><th></th></tr></thead>
+          <tbody id="batchRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section data-panel="audit" class="hidden">
+      <div class="toolbar"><button class="btn" id="retentionBtn">รัน Retention (ลบข้อมูลที่ครบกำหนด) ตอนนี้</button></div>
+      <div class="card" style="padding:0">
+        <table class="table small">
+          <thead><tr><th>เวลา</th><th>ผู้ใช้</th><th>การกระทำ</th><th>ใบสมัคร</th><th>รายละเอียด</th></tr></thead>
+          <tbody id="auditRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="detail" class="drawer"><div id="detailBody"></div></dialog>
+  <dialog id="resultDlg" class="modal"><form method="dialog" id="resultForm"></form></dialog>
+
+  <script type="module" src="/hr/hr.js"></script>
+</body>
+</html>

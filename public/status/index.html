@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#13315c">
+  <title>สถานะใบสมัคร</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/app.css">
+  <style>
+    .status-hero { text-align: center; padding: 8px 0 4px; }
+    .status-icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 12px; display: grid; place-items: center; }
+    .status-icon .icon { width: 32px; height: 32px; }
+    .app-meta { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: .92rem; margin-top: 16px; }
+    .app-meta dt { color: var(--muted); }
+    .app-meta dd { margin: 0; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">SR</span><span class="brand-text"><span>สถานะใบสมัคร</span><small>บริษัท สยามราชธานี จำกัด (มหาชน)</small></span></div>
+  </header>
+  <main class="container">
+    <div class="card" id="box"><span class="spinner"></span> กำลังโหลด…</div>
+  </main>
+  <script type="module">
+    import { api, thaiDate, esc, icon } from '/assets/common.js';
+    const box = document.getElementById('box');
+    const token = new URLSearchParams(location.search).get('t');
+    try {
+      if (!token) throw new Error('ลิงก์ติดตามสถานะไม่ถูกต้อง');
+      const s = await api(`/api/applications/status/${encodeURIComponent(token)}`);
+      const look = {
+        PENDING_CHECK: ['clock', 'var(--primary-soft)', 'var(--primary)'],
+        IN_CHECK: ['shield', 'var(--info-soft)', 'var(--info)'],
+        PASSED: ['checkCircle', 'var(--ok-soft)', 'var(--ok)'],
+        REJECTED: ['info', 'var(--surface-2)', 'var(--muted)'],
+      }[s.status];
+      const stages = [
+        ['ส่งใบสมัคร', `เมื่อ ${thaiDate(s.created_at, true)}`],
+        ['รับข้อมูลเรียบร้อย', 'ระบบได้รับข้อมูลและเอกสารครบถ้วน'],
+        ['ตรวจสอบประวัติ', 'ทราบผลประมาณ 16:00 น. ของวันทำการ'],
+        ['แจ้งผล', s.step === 3 ? s.text : 'เจ้าหน้าที่จะติดต่อกลับทางเบอร์มือถือ'],
+      ];
+      const reached = s.step + 1;
+      box.innerHTML = `
+        <div class="status-hero">
+          <div class="status-icon" style="background:${look[1]};color:${look[2]}">${icon(look[0])}</div>
+          <h1 style="font-size:1.25rem">${esc(s.text)}</h1>
+        </div>
+        <dl class="app-meta">
+          <dt>เลขที่ใบสมัคร</dt><dd>${esc(s.application_no)}</dd>
+          <dt>ผู้สมัคร</dt><dd>คุณ${esc(s.first_name || '')}</dd>
+          <dt>ตำแหน่ง</dt><dd>${esc(s.position_applied || '-')}</dd>
+        </dl>
+        <ul class="timeline" style="margin-top:24px">${stages.map(([t, d], i) =>
+          `<li class="${i < reached ? 'done' : ''} ${i === reached - 1 ? 'current' : ''}"><strong>${t}</strong><span class="small">${esc(d)}</span></li>`).join('')}</ul>`;
+    } catch (err) {
+      box.innerHTML = `<div class="alert alert-danger" style="margin:0">${icon('alert')}<span>${esc(err.message)}</span></div>`;
+    }
+  </script>
+</body>
+</html>
