@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// On Cloudflare Workers there is no file system path; only the Node server uses root/dataDir
+const root = String(import.meta.url).startsWith('file:') ? path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..') : '/';
 
 export const config = {
   root,
@@ -17,6 +18,7 @@ export const config = {
   // claude | mock | off  (claude needs ANTHROPIC_API_KEY or an `ant auth login` profile)
   ocrProvider: process.env.OCR_PROVIDER || (process.env.ANTHROPIC_API_KEY ? 'claude' : 'mock'),
   ocrModel: process.env.OCR_MODEL || 'claude-opus-5-5',
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
   // Main HR system hand-off: POST JSON here when set, otherwise drop a file in storage/outbox
   mainSystemWebhook: process.env.MAIN_SYSTEM_WEBHOOK_URL || '',
   // Initial password for the 5 seeded HR accounts (local dev only — change after first login)

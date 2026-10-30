@@ -1,0 +1,27 @@
+// Cloudflare Workers deployment (npm run cf:deploy). The Node server (npm start) is unaffected.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "q-recruit",
+  "main": "cloudflare/worker.js",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "q-recruit-db", "database_id": "3ca49cee-4394-4fa1-82e5-251254124150" }
+  ],
+  // Document files. Switch to R2 once enabled: add "r2_buckets": [{ "binding": "DOCS", "bucket_name": "q-recruit-docs" }]
+  "kv_namespaces": [
+    { "binding": "FILES", "id": "ec2f5500f6bc47bf91298d32eb02a95a" }
+  ],
+  // PDPA retention purge, hourly
+  "triggers": { "crons": ["0 * * * *"] },
+  "vars": {
+    "COMPANY_NAME": "บริษัท สยามราชธานี จำกัด (มหาชน)",
+    "RETENTION_DAYS": "30"
+  },
+  // Secrets (wrangler secret put): AUTH_SECRET, SEED_PASSWORD, optional ANTHROPIC_API_KEY, MAIN_SYSTEM_WEBHOOK_URL
+  "observability": { "enabled": true }
+}

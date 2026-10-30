@@ -21,6 +21,23 @@ npm start
 
 ถ้าไม่ได้ตั้ง `ANTHROPIC_API_KEY` ระบบจะใช้ `OCR_PROVIDER=mock` (คืนข้อมูลสมมติ) เพื่อทดลอง UI ได้ทันที
 
+## Deploy บน Cloudflare Workers
+
+เวอร์ชัน Cloudflare อยู่ที่ [cloudflare/worker.js](cloudflare/worker.js) (API เดียวกับ `src/server.js`) — ฐานข้อมูล **D1**, ไฟล์เอกสาร **Workers KV** (สลับเป็น R2 ได้), ลบข้อมูลตาม PDPA ด้วย **Cron** ทุกชั่วโมง, หน้าเว็บ `public/` เสิร์ฟเป็น Static Assets
+
+```bash
+npm run cf:deploy
+```
+
+| Secret (`npx wrangler secret put <ชื่อ>`) | ความหมาย |
+|---|---|
+| `SEED_PASSWORD` | รหัสผ่านเริ่มต้นของ 5 บัญชี HR (ใช้ตอนล็อกอินครั้งแรกเพื่อสร้างบัญชี) |
+| `AUTH_SECRET` | คีย์เซ็น token การล็อกอิน |
+| `ANTHROPIC_API_KEY` | (ถ้ามี) เปิด AI OCR จริง — ไม่ตั้งจะใช้โหมด mock |
+| `MAIN_SYSTEM_WEBHOOK_URL` | (ถ้ามี) URL ระบบหลัก — ไม่ตั้งจะเก็บ JSON ไว้ใน storage key `outbox/` |
+
+ฐานข้อมูลใหม่: `npm run cf:db:init` · เปลี่ยนไปใช้ R2: เปิด R2 ใน Dashboard แล้วเพิ่ม `r2_buckets` binding ชื่อ `DOCS` ใน [wrangler.jsonc](wrangler.jsonc)
+
 ## ทดสอบกล้องสแกนบนมือถือจริง (Wi-Fi เดียวกัน)
 
 มือถือเปิดกล้องในหน้าเว็บได้เฉพาะ HTTPS — ถ้ามีไฟล์ `storage/certs/dev-cert.pem` + `dev-key.pem` เซิร์ฟเวอร์จะเปิด HTTPS ที่พอร์ต 3443 เพิ่ม

@@ -2,3 +2,5 @@ node_modules/
 storage/
 .env
 .claude/settings.local.json
+.wrangler/
+.dev.vars

@@ -1,5 +1,4 @@
 -- Smart Recruitment & OCR Portal — SQLite schema
-PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS users_hr (
   id            INTEGER PRIMARY KEY,

@@ -7,7 +7,7 @@ import { hashPassword } from './auth.js';
 fs.mkdirSync(path.join(config.dataDir, 'uploads'), { recursive: true });
 
 export const db = new DatabaseSync(path.join(config.dataDir, 'recruit.db'));
-db.exec('PRAGMA journal_mode = WAL;');
+db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
 db.exec(fs.readFileSync(path.join(config.root, 'db', 'schema.sql'), 'utf8'));
 
 export function tx(fn) {

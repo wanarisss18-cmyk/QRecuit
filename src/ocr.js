@@ -57,7 +57,7 @@ Rules:
 - notes: one short sentence in Thai if the photo has problems the applicant should fix (blurry, cropped, wrong document), otherwise null.`;
 
 let client;
-const getClient = () => (client ??= new Anthropic());
+const getClient = () => (client ??= new Anthropic(config.anthropicApiKey ? { apiKey: config.anthropicApiKey } : {}));
 
 async function extractWithClaude(buffer, mimeType, docType) {
   const source = { type: 'base64', media_type: mimeType, data: buffer.toString('base64') };
